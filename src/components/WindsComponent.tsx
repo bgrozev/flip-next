@@ -152,27 +152,44 @@ export default function WindsComponent({
                   <RemoveIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
-              <TextField
-                type="datetime-local"
-                size="small"
-                value={forecastInputValue}
-                inputProps={{
-                  min: toDateTimeLocalString(minDate),
-                  max: toDateTimeLocalString(maxDate)
-                }}
-                onChange={e => {
-                  if (!e.target.value) {
-                    onForecastTimeChange(null);
-                  } else {
-                    onForecastTimeChange(new Date(e.target.value));
+              {/* Two separate inputs for cross-browser compatibility (Firefox datetime-local has no time picker) */}
+              <Box
+                sx={{ display: 'flex', gap: 0.5, flex: 1 }}
+                onBlur={e => {
+                  // Only fetch when focus leaves the whole date+time group
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    const inputs = e.currentTarget.querySelectorAll('input');
+                    const dateVal = (inputs[0] as HTMLInputElement)?.value;
+                    const timeVal = (inputs[1] as HTMLInputElement)?.value;
+                    fetch(dateVal && timeVal ? new Date(`${dateVal}T${timeVal}`) : null);
                   }
                 }}
-                onBlur={e => {
-                  const newTime = e.target.value ? new Date(e.target.value) : null;
-                  fetch(newTime);
-                }}
-                sx={{ flex: 1 }}
-              />
+              >
+                <TextField
+                  type="date"
+                  size="small"
+                  value={forecastInputValue.split('T')[0]}
+                  inputProps={{
+                    min: toDateTimeLocalString(minDate).split('T')[0],
+                    max: toDateTimeLocalString(maxDate).split('T')[0]
+                  }}
+                  onChange={e => {
+                    const timeStr = forecastInputValue.split('T')[1] ?? '00:00';
+                    onForecastTimeChange(e.target.value ? new Date(`${e.target.value}T${timeStr}`) : null);
+                  }}
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  type="time"
+                  size="small"
+                  value={forecastInputValue.split('T')[1] ?? '00:00'}
+                  onChange={e => {
+                    const dateStr = forecastInputValue.split('T')[0];
+                    onForecastTimeChange(e.target.value ? new Date(`${dateStr}T${e.target.value}`) : null);
+                  }}
+                  sx={{ width: 110 }}
+                />
+              </Box>
               <Tooltip title="One hour later">
                 <IconButton size="small" onClick={() => adjustForecastHour(1)}>
                   <AddIcon fontSize="small" />
