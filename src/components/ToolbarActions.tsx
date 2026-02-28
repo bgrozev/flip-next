@@ -102,7 +102,7 @@ function RefreshWindsButton({
   const child = fetching ? (
     <CircularProgress size={24} />
   ) : (
-    <IconButton type="button" aria-label="refresh-wind" onClick={onClick}>
+    <IconButton type="button" aria-label="refresh-wind" onClick={() => onClick()}>
       <RefreshIcon />
     </IconButton>
   );

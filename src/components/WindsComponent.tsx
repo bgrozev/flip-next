@@ -143,9 +143,21 @@ export default function WindsComponent({
       <>
           {/* Forecast time picker */}
           <Box sx={{ mb: 1.5 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
-              Forecast time
-            </Typography>
+            <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+              <Typography variant="caption" color="text.secondary">
+                Forecast time
+              </Typography>
+              {forecastTime && (
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={() => { onForecastTimeChange(null); fetch(null); }}
+                  sx={{ minWidth: 0, px: 0.5, py: 0, ml: 0.5, fontSize: '0.65rem', lineHeight: 1.2 }}
+                >
+                  now
+                </Button>
+              )}
+            </Stack>
             <Stack direction="row" spacing={0.5} alignItems="center">
               <Tooltip title="One hour earlier">
                 <IconButton size="small" onClick={() => adjustForecastHour(-1)}>
@@ -195,16 +207,6 @@ export default function WindsComponent({
                   <AddIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
-              {forecastTime && (
-                <Button
-                  variant="text"
-                  size="small"
-                  onClick={() => onForecastTimeChange(null)}
-                  sx={{ minWidth: 0, px: 0.5 }}
-                >
-                  Now
-                </Button>
-              )}
             </Stack>
           </Box>
 
